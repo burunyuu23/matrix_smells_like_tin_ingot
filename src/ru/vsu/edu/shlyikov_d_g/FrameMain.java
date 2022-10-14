@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -86,7 +87,28 @@ public class FrameMain extends JFrame{
     private JButton TRANSLATEButton;
     private JTextField translateYField;
     private JTextField translateField;
-    private JButton deleteButton;
+    private JButton deleteHistoryButton;
+    private JButton test90TriangleButton;
+    private JButton test2TriangleButton;
+    private JButton testImageButton;
+    private JButton testCircleButton;
+    private JButton test3TriangleButton;
+    private JButton testStarButton;
+    private JButton testTriangleInsideButton;
+    private JButton testRandomQButton;
+    private JButton a90degButton;
+    private JButton a45degButton;
+    private JButton a90degButton1;
+    private JButton a180degButton;
+    private JButton a45degButton1;
+    private JButton x2scaleButton;
+    private JButton x3scaleButton;
+    private JButton x05scaleButton;
+    private JButton x03scaleButton;
+    private JButton setBaseCenterButton;
+    private JButton a180degButton1;
+    private JCheckBox xScalingCheckBox;
+    private JCheckBox yScalingCheckBox;
 
     private myPanel painter;
 
@@ -115,6 +137,7 @@ public class FrameMain extends JFrame{
     private void setClickedPoint(int x, int y){
         this.clickedX = x;
         this.clickedY = y;
+        updateCenterPointText();
     }
 
     public FrameMain() {
@@ -133,11 +156,15 @@ public class FrameMain extends JFrame{
         });
         this.pack();
 
-        int x0 = this.getWidth() / 2 + (size - (this.getWidth() / 2) % size)  ;
-        int y0 = this.getHeight() / 2 + (size - (this.getHeight() / 2) % size);
-        setStartCoords(x0, y0);
+        this.setSize(1920, 1080);
+        painter.setSize(1100,964);
+        DrawPanel.setSize(1100,964);
 
-        updateCenterPointText();
+        int x0 = painter.getWidth() / 2;
+        int y0 = painter.getHeight() / 2;
+        setStartCoords(x0, y0);
+        System.out.println(x0);
+        System.out.println(y0);
 
         CurrentSettingsPanel.add(FigurePanel, "Draw figures");
         CurrentSettingsPanel.add(ScalePanel, "Scale");
@@ -189,9 +216,9 @@ public class FrameMain extends JFrame{
         chooseFigureButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                pointList.clear();
+                pointList = new ArrayList<>();
                 pointsComboBox.removeAllItems();
-                transformList.clear();
+                transformList  = new ArrayList<>();
                 historyTransformationComboBox.removeAllItems();
                 updateInputPointText();
             }
@@ -219,7 +246,68 @@ public class FrameMain extends JFrame{
                         }
                     Figure figure = new Figure(pointList, startX, startY, current);
                     setFigure(figure);
+                    if (current.equals("Triangle") || current.equals("Quadrilateral")) {
+                        pointsComboBox.removeAllItems();
+                        for (int i = 0; i < pointList.size(); i++) {
+                            pointsComboBox.insertItemAt(pointList.get(i), i);
+                        }
+                    }
                     System.out.println(figure.getCoords().toString());
+                repaint();
+            }
+        });
+
+        testImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Figure figure = null;
+                try {
+                    figure = Figure.testImage(startX, startY);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                setFigure(figure);
+                System.out.println(figure.getCoords().toString());
+                repaint();
+            }
+        });
+
+        testTriangleInsideButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Figure figure = Figure.testTriangleInside(startX, startY);
+                setFigure(figure);
+                System.out.println(figure.getCoords().toString());
+                repaint();
+            }
+        });
+
+        test2TriangleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Figure figure = Figure.test2Triangle(startX, startY);
+                setFigure(figure);
+                System.out.println(figure.getCoords().toString());
+                repaint();
+            }
+        });
+
+        test3TriangleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Figure figure = Figure.test3Triangle(startX, startY);
+                setFigure(figure);
+                System.out.println(figure.getCoords().toString());
+                repaint();
+            }
+        });
+
+        test90TriangleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Figure figure = Figure.test90Triangle(startX, startY);
+                setFigure(figure);
+                System.out.println(figure.getCoords().toString());
                 repaint();
             }
         });
@@ -260,12 +348,154 @@ public class FrameMain extends JFrame{
             }
         });
 
+        x2scaleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (xScalingCheckBox.isSelected() || yScalingCheckBox.isSelected()) {
+                    Transform transform = new Transform(figure);
+                    if (xScalingCheckBox.isSelected() && yScalingCheckBox.isSelected()) {
+                        figure = transform.scale(Transform.X2_SCALE);
+                    } else if (xScalingCheckBox.isSelected()) {
+                        figure = transform.scaleX(Transform.X2_SCALE);
+                    } else {
+                        figure = transform.scaleY(Transform.X2_SCALE);
+                    }
+                    transformList.add(transform);
+                    historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                }
+                repaint();
+            }
+        });
+
+        x05scaleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (xScalingCheckBox.isSelected() || yScalingCheckBox.isSelected()) {
+                    Transform transform = new Transform(figure);
+                    if (xScalingCheckBox.isSelected() && yScalingCheckBox.isSelected()) {
+                        figure = transform.scale(Transform.X_2_SCALE);
+                    } else if (xScalingCheckBox.isSelected()) {
+                        figure = transform.scaleX(Transform.X_2_SCALE);
+                    } else {
+                        figure = transform.scaleY(Transform.X_2_SCALE);
+                    }
+                    transformList.add(transform);
+                    historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                }
+                repaint();
+            }
+        });
+
+        x03scaleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (xScalingCheckBox.isSelected() || yScalingCheckBox.isSelected()) {
+                    Transform transform = new Transform(figure);
+                    if (xScalingCheckBox.isSelected() && yScalingCheckBox.isSelected()) {
+                        figure = transform.scale(Transform.X_3_SCALE);
+                    } else if (xScalingCheckBox.isSelected()) {
+                        figure = transform.scaleX(Transform.X_3_SCALE);
+                    } else {
+                        figure = transform.scaleY(Transform.X_3_SCALE);
+                    }
+                    transformList.add(transform);
+                    historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                }
+                repaint();
+            }
+        });
+
+        x3scaleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (xScalingCheckBox.isSelected() || yScalingCheckBox.isSelected()) {
+                    Transform transform = new Transform(figure);
+                    if (xScalingCheckBox.isSelected() && yScalingCheckBox.isSelected()) {
+                        figure = transform.scale(Transform.X3_SCALE);
+                    } else if (xScalingCheckBox.isSelected()) {
+                        figure = transform.scaleX(Transform.X3_SCALE);
+                    } else {
+                        figure = transform.scaleY(Transform.X3_SCALE);
+                    }
+                    transformList.add(transform);
+                    historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                }
+                repaint();
+            }
+        });
+
         degreeRotateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 double degree = Double.parseDouble(degreeRotateInput.getText());
                 Transform transform = new Transform(figure);
                 figure = transform.rotateDegrees(degree);
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                repaint();
+            }
+        });
+
+        a90degButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Transform transform = new Transform(figure);
+                figure = transform.rotateDegrees(Transform.DEGREE_ROTATE_CLOCKWISE_90);
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                repaint();
+            }
+        });
+
+        a90degButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Transform transform = new Transform(figure);
+                figure = transform.rotateDegrees(Transform.DEGREE_ROTATE_COUNTERCLOCKWISE_90);
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                repaint();
+            }
+        });
+
+        a180degButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Transform transform = new Transform(figure);
+                figure = transform.rotateDegrees(Transform.DEGREE_ROTATE_CLOCKWISE_180);
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                repaint();
+            }
+        });
+
+        a180degButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Transform transform = new Transform(figure);
+                figure = transform.rotateDegrees(Transform.DEGREE_ROTATE_COUNTERCLOCKWISE_180);
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                repaint();
+            }
+        });
+
+        a45degButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Transform transform = new Transform(figure);
+                figure = transform.rotateDegrees(Transform.DEGREE_ROTATE_CLOCKWISE_45);
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                repaint();
+            }
+        });
+
+        a45degButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Transform transform = new Transform(figure);
+                figure = transform.rotateDegrees(Transform.DEGREE_ROTATE_COUNTERCLOCKWISE_45);
                 transformList.add(transform);
                 historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
                 repaint();
@@ -308,33 +538,6 @@ public class FrameMain extends JFrame{
                 repaint();
             }
         });
-
-        shiftDegrButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                double alpha, beta;
-                alpha = beta = Double.parseDouble(shiftDegrField.getText());
-                Transform transform = new Transform(figure);
-                figure = transform.shiftDegrees(alpha, beta);
-                transformList.add(transform);
-                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
-                repaint();
-            }
-        });
-
-        shiftRadButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                double alpha, beta;
-                alpha = beta = Double.parseDouble(shiftRadField.getText());
-                Transform transform = new Transform(figure);
-                figure = transform.shiftRadians(alpha, beta);
-                transformList.add(transform);
-                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
-                repaint();
-            }
-        });
-
         shiftVertDegrButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -419,6 +622,40 @@ public class FrameMain extends JFrame{
                 repaint();
             }
         });
+
+        setBaseCenterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Point p = new Point(DrawPanel.getWidth()/2, DrawPanel.getHeight()/2);
+                Transform transform = new Transform("Translate transform pos", startX, startY, p.getX(), p.getY());
+                transformList.add(transform);
+                historyTransformationComboBox.insertItemAt(transform, transformList.size() - 1);
+                setStartCoords(p);
+                repaint();
+            }
+        });
+
+        deleteHistoryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = historyTransformationComboBox.getItemCount() - 1;
+                if (index >= 0) {
+                    transformList.remove(index);
+
+                    Transform transform = (Transform) historyTransformationComboBox.getItemAt(index);
+                    historyTransformationComboBox.removeItemAt(index);
+                    if (transform.getName().equals("Translate transform pos")){
+                        setStartCoords(transform.getPointList().get(0));
+                    }
+                    else {
+                        transform.setStart(figure);
+                        figure = transform.transformAgain();
+                    }
+
+                    repaint();
+                }
+            }
+        });
     }
 
     private void updateInputPointText(){
@@ -456,11 +693,13 @@ public class FrameMain extends JFrame{
     private void setStartCoords(int startX, int startY){
         this.startX = startX;
         this.startY = startY;
+        updateCenterPointText();
     }
 
     private void setStartCoords(Point p){
         this.startX = p.getX();
         this.startY = p.getY();
+        updateCenterPointText();
     }
 
     private int getW(){
@@ -486,7 +725,7 @@ public class FrameMain extends JFrame{
         }
         public Dimension getPreferredSize()
         {
-            return new Dimension(390,250);
+            return new Dimension(390,190);
         }
         public void doDrawing(Graphics g) {
             double y;
@@ -503,7 +742,7 @@ public class FrameMain extends JFrame{
             // Рисуем сетку
             gr.setPaint(Color.LIGHT_GRAY);
             gr.setStroke(new BasicStroke((float) 0.2));
-            for (y = 0; y <= this.getWidth(); y += size) {
+            for (y = 0; y <= this.getWidth()*2; y += size) {
                 gr.draw(new Line2D.Double(0, y, this.getWidth(), y));
                 gr.draw(new Line2D.Double(y, 0, y, this.getHeight()));
             }
@@ -530,6 +769,17 @@ public class FrameMain extends JFrame{
             if (figure != null && figure.getCoords() != null) {
                 figure.changeStart(startX, startY);
                 gr.draw(figure.getPath());
+                pointList.clear();
+                pointsComboBox.removeAllItems();
+                for (int i = 0; i < figure.getCoords().getMatrix().size(); i++) {
+                    pointList.add(new Point(figure.getCoords().getMatrix().get(i).get(0).intValue()-figure.getStartX(),
+                            figure.getCoords().getMatrix().get(i).get(1).intValue()-figure.getStartY()));
+                    pointsComboBox.insertItemAt(pointList.get(i), i);
+                }
+//                if (figure.getImage() != null){
+//                    gr.drawImage(figure.getImage(), figure.getCoords().getMatrix().get(0).get(0).intValue()+5,
+//                        figure.getCoords().getMatrix().get(0).get(1).intValue()+5, 800, 600,null);
+//                }
             }
         }
 

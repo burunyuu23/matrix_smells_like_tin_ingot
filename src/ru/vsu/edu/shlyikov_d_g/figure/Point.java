@@ -21,7 +21,11 @@ public class Point {
 
     @Override
     public String toString() {
-        return '(' + x + ", " + y + ')';
+        return (String.format("(%d,%d)", x, y));
+    }
+
+    public int getNonZero(){
+        return x == 0 ? y : x;
     }
 
     public static Point parsePoint(String str){

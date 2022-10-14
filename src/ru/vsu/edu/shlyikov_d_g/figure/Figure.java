@@ -2,7 +2,12 @@ package ru.vsu.edu.shlyikov_d_g.figure;
 
 import ru.vsu.edu.shlyikov_d_g.Matrix;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -11,6 +16,7 @@ public class Figure extends Path2D.Float{
     int startX = 0;
     int startY = 0;
     private Matrix coords;
+    private Image image;
 
     public Figure(Matrix coords, int startX, int startY){
         this.startX = startX;
@@ -31,6 +37,51 @@ public class Figure extends Path2D.Float{
         this.coords = new Matrix();
     }
 
+    public static Figure test3Triangle(int startX, int startY){
+        List<Point> list = new ArrayList<>();
+        list.add(new Point(-100,-100));
+        list.add(new Point(200,200));
+        return new Figure(list, startX, startY, "triangle");
+    }
+
+    public static Figure test2Triangle(int startX, int startY){
+        List<Point> list = new ArrayList<>();
+        list.add(new Point(-100,-100));
+        list.add(new Point(200,100));
+        return new Figure(list, startX, startY, "triangle");
+    }
+
+    public static Figure test90Triangle(int startX, int startY){
+        List<Point> list = new ArrayList<>();
+        list.add(new Point(-100,-100));
+        list.add(new Point(200,200));
+        return new Figure(list, startX, startY, "90triangle");
+    }
+
+    public static Figure testTriangleInside(int startX, int startY){
+        List<Point> list = new ArrayList<>();
+        list.add(new Point(-100,-150));
+        list.add(new Point(200,300));
+        return new Figure(list, startX, startY, "triforce");
+    }
+
+    public static Figure testImage(int startX, int startY) throws IOException {
+        List<Point> list = new ArrayList<>();
+        list.add(new Point(-400,-300));
+        list.add(new Point(810,610));
+        Figure ans = new Figure(list, startX, startY, "quadrilateral");
+        ans.setImage(ImageIO.read(new File("C:\\Users\\zEzzLike\\IdeaProjects\\kg task 2\\src\\ru\\vsu\\edu\\shlyikov_d_g\\figure\\testImage.jpg")));
+        return ans;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     public Figure(List<Point> list, int startX, int startY, String current){
         this.startX = startX;
         this.startY = startY;
@@ -43,14 +94,26 @@ public class Figure extends Path2D.Float{
             case "triangle" -> {
                 list.add(list.size(), new Point(list.get(0).getX() + p.getX()/2,list.get(0).getY() + p.getY()));
                 list.add(list.size(), new Point(list.get(0).getX() + p.getX(),list.get(0).getY()));
-                list.add(list.size(), new Point(list.get(0).getX(),list.get(0).getY()));
+                addVectors(list);
+            }
+            case "90triangle" -> {
+                list.add(list.size(), new Point(list.get(0).getX(),list.get(0).getY() + p.getY()));
+                list.add(list.size(), new Point(list.get(0).getX() + p.getX() + p.getX(),list.get(0).getY()));
+                addVectors(list);
+            }
+            case "triforce" -> {
+                list.add(list.size(), new Point(list.get(0).getX() + p.getX()/4,list.get(0).getY() + p.getY()/4));
+                list.add(list.size(), new Point(list.get(0).getX() + p.getX()/2,list.get(0).getY()));
+                list.add(list.size(), new Point(list.get(0).getX() + 3*p.getX()/4,list.get(0).getY() + p.getY()/4));
+                list.add(list.size(), new Point(list.get(0).getX() + p.getX()/4,list.get(0).getY() + p.getY()/4));
+                list.add(list.size(), new Point(list.get(0).getX() + p.getX()/2,list.get(0).getY() + p.getY()/2));
+                list.add(list.size(), new Point(list.get(0).getX() + p.getX(),list.get(0).getY()));
                 addVectors(list);
             }
             case "quadrilateral" -> {
                 list.add(list.size(), new Point(list.get(0).getX(), list.get(0).getY() + p.getY()));
                 list.add(list.size(), new Point(list.get(0).getX() + p.getX(), list.get(0).getY() + p.getY()));
                 list.add(list.size(), new Point(list.get(0).getX() + p.getX(), list.get(0).getY()));
-                list.add(list.size(), new Point(list.get(0).getX(), list.get(0).getY()));
                 addVectors(list);
             }
             case "free form" -> {
